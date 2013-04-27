@@ -1,0 +1,34 @@
+{
+	"manifest_version": 2,
+
+	"name": "Chelper",
+	"description": "Helps you by giving you the next best move for a game on Chess.com",
+	"version": "1.0",
+
+	"browser_action":
+	{
+		"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
+	
+	"icons":
+	{
+		"16": "icon.png",
+		"48": "icon.png",
+		"128": "icon.png"
+	},
+	
+	"background":
+	{
+		"scripts": ["browserActionListener.js"],
+		"persistent": false
+	},
+	
+	"permissions":
+	[
+		"activeTab",
+		"http://*.chess.com/*",
+		"http://nextchessmove.com/"
+	]
+	
+}
