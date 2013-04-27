@@ -5,19 +5,20 @@ function hasClass(element, cls)
 
 function getCurrentBoard()
 {
-	var gameContainer = document.getElementById("game_container");
-	var child = gameContainer.firstChild;
-	while (child)
+	// loop through all the games
+	$('#game_container').children('input').each(function ()
 	{
-		if (!hasClass(child, "visibilityHidden"))
+		// if it's not hidden, then this is the active one
+		if (!this.hasClass("visibilityHidden"))
 		{
-			var startOfBoardNum = child.id.lastIndexOf("_") + 1;
-			var boardIdentifier = child.id.substring(startOfBoardNum, child.id.length);
+			// get the identifier
+			var id = this.attr("id");
+			var startOfBoardNum = id.lastIndexOf("_") + 1;
+			var boardIdentifier = id.substring(startOfBoardNum);
+			
 			return boardIdentifier;
 		}
-		
-		child = child.nextSibling;
-	}
+	});
 	
 	return 1;
 }
