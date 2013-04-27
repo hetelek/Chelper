@@ -5,19 +5,15 @@ function hasClass(element, cls)
 
 function getCurrentBoard()
 {
-	// loop through all the games
-	$('#game_container').children('input').each(function ()
+	// get the current displayed game
+	$('#game_container').children('input:not(.visibilityHidden)').each(function ()
 	{
-		// if it's not hidden, then this is the active one
-		if (!this.hasClass("visibilityHidden"))
-		{
-			// get the identifier
-			var id = this.attr("id");
-			var startOfBoardNum = id.lastIndexOf("_") + 1;
-			var boardIdentifier = id.substring(startOfBoardNum);
-			
-			return boardIdentifier;
-		}
+		// get the identifier
+		var id = this.attr("id");
+		var startOfBoardNum = id.lastIndexOf("_") + 1;
+		var boardIdentifier = id.substring(startOfBoardNum);
+		
+		return boardIdentifier;
 	});
 	
 	return 1;
@@ -71,7 +67,7 @@ function getFenString()
 
 	// get the current player
 	var currentPlayer;
-	if (hasClass(document.getElementById("white_timer_" + boardIdentifier), "active"))
+	if ($("white_timer_" + boardIdentifier).hasClass("active"))
 		currentPlayer = "w";
 	else
 		currentPlayer = "b";
