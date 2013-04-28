@@ -3,7 +3,7 @@
 
 	"name": "Chelper",
 	"description": "Helps you by giving you the next best move for a game on Chess.com",
-	"version": "1.0",
+	"version": "0.0.1.0",
 
 	"browser_action":
 	{
