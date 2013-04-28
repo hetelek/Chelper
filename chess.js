@@ -1,17 +1,19 @@
 function getCurrentBoard()
 {
 	// get the current displayed game
-	$('#game_container').children('input:not(.visibilityHidden)').each(function ()
+	var currentDisplayedGame = $("#game_container").children("div:not(.visibilityHidden)");
+
+	if (currentDisplayedGame)
 	{
 		// get the identifier
-		var id = this.attr("id");
+		var id = currentDisplayedGame.attr("id");
 		var startOfBoardNum = id.lastIndexOf("_") + 1;
 		var boardIdentifier = id.substring(startOfBoardNum);
 		
 		return boardIdentifier;
-	});
-	
-	return 1;
+	}
+
+	return null;
 }
 
 function getFenString()
@@ -64,8 +66,19 @@ function getFenString()
 	var currentPlayer;
 	if ($("#white_timer_" + boardIdentifier).hasClass("active"))
 		currentPlayer = "w";
-	else
+	else if ($("#black_timer_" + boardIdentifier).hasClass("active"))
 		currentPlayer = "b";
+	else
+	{
+		// couldn't auto detect
+		// for now we'll randomly select one
+		if (Math.floor(Math.random() * 2) % 2 == 1)
+			currentPlayer = "w";
+		else
+			currentPlayer = "b";
+			
+		alert(currentPlayer);
+	}
 
 	// setup variables
 	var fenStr = "";
