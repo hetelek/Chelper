@@ -1,11 +1,25 @@
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
+{
 	if (request.nextMove != null)
-		$('.container').html("<h4 id=\"status\">" + request.nextMove + "</h4>");
+	{
+		$("#spinner").hide();
+		$("#status").text(request.nextMove);
+		$("#status").show();
+	}
 	else
-		$('.container').html("<img src=\"spinner.gif\" id=\"spinner\" />");
+	{
+		$("#status").hide();
+		$("#spinner").show();
+	}
 });
 
-$('.container').html("<img src=\"spinner.gif\" id=\"spinner\" />");
+$("#status").click(function()
+{
+	chrome.tabs.getSelected(null, function(tab)
+	{
+		chrome.tabs.sendMessage(tab.id, { move: $("#status").text() });
+	});
+});
 
 chrome.tabs.executeScript(null, { file: "jquery-1.9.1.min.js" });
 chrome.tabs.executeScript(null, { file: "chess.js" });
