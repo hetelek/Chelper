@@ -1,3 +1,7 @@
+var whiteOnTop;
+var squareSize;
+var boardLocation = new Array(2);
+
 function getCurrentBoard()
 {
 	// get the current displayed game
@@ -16,6 +20,15 @@ function getCurrentBoard()
 	return null;
 }
 
+function simulateClick(x, y)
+{
+    var el = document.elementFromPoint(x, y);
+    var evt = document.createEvent("MouseEvents");
+	evt.initMouseEvent("click", true, true, window, 1, 0, 0, x, y, false, false, false, false, 0, null);
+
+    el.dispatchEvent(evt);
+}
+
 function getFenString()
 {
 	var boardIdentifier = getCurrentBoard();
@@ -23,6 +36,9 @@ function getFenString()
 
 	if (!board)
 		return null;
+	
+	boardLocation[0] = $(board).offset().left;
+	boardLocation[1] = $(board).offset().top;
 	
 	var chessBoard = {
 				"a8": "1", "b8": "1", "c8": "1", "d8": "1", "e8": "1", "f8": "1", "g8": "1", "h8": "1",
@@ -43,6 +59,8 @@ function getFenString()
 		{
 			if (child.hasOwnProperty("src"))
 			{
+				squareSize = child.width;
+				
 				var piecePlayerStart = child.src.lastIndexOf("/") + 1;
 				var piecePlayer = child.src.substring(piecePlayerStart, ++piecePlayerStart);
 				var piece = child.src.substring(piecePlayerStart, piecePlayerStart + 1);
@@ -54,7 +72,7 @@ function getFenString()
 					piece = piece.toUpperCase();
 				else
 					piece = piece.toLowerCase();
-					
+				
 				chessBoard[pieceLocation] = piece;
 			}
 		}
@@ -62,11 +80,21 @@ function getFenString()
 		child = child.nextSibling;
 	}
 
+	// get the timers
+	var whiteTimer = $("#white_timer_" + boardIdentifier);
+	var blackTimer = $("#black_timer_" + boardIdentifier);
+	
+	// find who's on top/bottom
+	if (whiteTimer.parent().attr("id") == "topplayerdiv_" + boardIdentifier)
+		whiteOnTop = true;
+	else
+		whiteOnTop = false;
+		
 	// get the current player
 	var currentPlayer;
-	if ($("#white_timer_" + boardIdentifier).hasClass("active"))
+	if (whiteTimer.hasClass("active"))
 		currentPlayer = "w";
-	else if ($("#black_timer_" + boardIdentifier).hasClass("active"))
+	else if (blackTimer.hasClass("active"))
 		currentPlayer = "b";
 	else
 	{
@@ -76,8 +104,6 @@ function getFenString()
 			currentPlayer = "w";
 		else
 			currentPlayer = "b";
-			
-		alert(currentPlayer);
 	}
 
 	// setup variables
@@ -107,6 +133,23 @@ function getFenString()
 	return fenStr;
 }
 
+function clickSquare(square)
+{
+	var letters = [ "a", "b", "c", "d", "e", "f", "g", "h" ];
+	
+	var yNum = parseInt(square[1] - 1);
+	
+	if (whiteOnTop)
+		letters.reverse();
+	else
+		yNum = 7 - yNum;
+			
+	var targetY = yNum * squareSize + (squareSize / 2);
+	var targetX = letters.indexOf(square[0]) * squareSize + (squareSize / 2);
+	
+	simulateClick(boardLocation[0] + targetX, boardLocation[1] + targetY);
+}
+
 function getNextMove()
 {
 	// get the fen string
@@ -120,11 +163,14 @@ function getNextMove()
 	
 	// make the request
 	$.post("http://nextchessmove.com/", { fen: fenStr }).done(function(data)
-	{
+	{	
 		// once finished, extract the move
 		var startOfMove = data.indexOf("data-move=\\'") + 12;
 		var move = data.substring(startOfMove, startOfMove + 4);
 		chrome.runtime.sendMessage({ nextMove: move });
+		
+		clickSquare(move.substr(0, 2));
+		window.setTimeout(function() { clickSquare(move.substr(2, 2)); }, 500);
 	});
 }
 
