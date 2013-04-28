@@ -1,8 +1,3 @@
-function hasClass(element, cls)
-{
-    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
-}
-
 function getCurrentBoard()
 {
 	// get the current displayed game
@@ -67,7 +62,7 @@ function getFenString()
 
 	// get the current player
 	var currentPlayer;
-	if ($("white_timer_" + boardIdentifier).hasClass("active"))
+	if ($("#white_timer_" + boardIdentifier).hasClass("active"))
 		currentPlayer = "w";
 	else
 		currentPlayer = "b";
