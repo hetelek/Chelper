@@ -1,7 +1,15 @@
-var whiteOnTop;
-var squareSize;
+var whiteOnTop, squareSize, lastFen, lastMove;
 var boardLocation = new Array(2);
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
+{
+	// click the first piece
+	clickSquare(request.move.substr(0, 2));
+	
+	// click the target square after waiting 500 milliseconds
+	window.setTimeout(function() { clickSquare(request.move.substr(2, 2)); }, 500);
+});
+  
 function getCurrentBoard()
 {
 	// get the current displayed game
@@ -31,12 +39,14 @@ function simulateClick(x, y)
 
 function getFenString()
 {
+	// get the board identifier
 	var boardIdentifier = getCurrentBoard();
 	var board = document.getElementById("chessboard_" + boardIdentifier + "_boardarea");
 
 	if (!board)
 		return null;
 	
+	// get the locations
 	boardLocation[0] = $(board).offset().left;
 	boardLocation[1] = $(board).offset().top;
 	
@@ -137,41 +147,49 @@ function clickSquare(square)
 {
 	var letters = [ "a", "b", "c", "d", "e", "f", "g", "h" ];
 	
+	// get the number
 	var yNum = parseInt(square[1] - 1);
 	
+	// if white is on top, reverse the array
 	if (whiteOnTop)
 		letters.reverse();
 	else
 		yNum = 7 - yNum;
-			
+	
+	// calculate piece locations
 	var targetY = yNum * squareSize + (squareSize / 2);
 	var targetX = letters.indexOf(square[0]) * squareSize + (squareSize / 2);
 	
+	// simulate the click
 	simulateClick(boardLocation[0] + targetX, boardLocation[1] + targetY);
 }
 
 function getNextMove()
 {
 	// get the fen string
-	var fenStr = getFenString();
+	var currentFen = getFenString();
 	
-	if (!fenStr)
+	if (currentFen == lastFen)
+	{
+		chrome.runtime.sendMessage({ nextMove: lastMove });
+	}
+	else if (!currentFen)
 	{
 		chrome.runtime.sendMessage({ nextMove: null });
-		return;
 	}
-	
-	// make the request
-	$.post("http://nextchessmove.com/", { fen: fenStr }).done(function(data)
-	{	
-		// once finished, extract the move
-		var startOfMove = data.indexOf("data-move=\\'") + 12;
-		var move = data.substring(startOfMove, startOfMove + 4);
-		chrome.runtime.sendMessage({ nextMove: move });
+	else
+	{
+		lastFen = currentFen;
 		
-		clickSquare(move.substr(0, 2));
-		window.setTimeout(function() { clickSquare(move.substr(2, 2)); }, 500);
-	});
+		// make the request
+		$.post("http://nextchessmove.com/", { fen: lastFen }).done(function(data)
+		{	
+			// once finished, extract the move
+			var startOfMove = data.indexOf("data-move=\\'") + 12;
+			lastMove = data.substring(startOfMove, startOfMove + 4);
+			chrome.runtime.sendMessage({ nextMove: lastMove });
+		});
+	}
 }
 
 getNextMove();
