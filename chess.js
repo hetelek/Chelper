@@ -37,6 +37,32 @@ function simulateClick(x, y)
     el.dispatchEvent(evt);
 }
 
+function collectTextNodes(element, texts)
+{
+	for (var child = element.firstChild; child !== null; child = child.nextSibling)
+	{
+		if (child.nodeType == 3)
+            texts.push(child);
+		else if (child.nodeType == 1)
+            collectTextNodes(child, texts);
+    }
+}
+function getTextWithSpaces(element)
+{
+	var texts = [];
+    collectTextNodes(element, texts);
+	for (var i = texts.length; i > 0; i--)
+        texts[i]= texts[i].data;
+		
+    return texts.join(' ');
+}
+
+function getPgnString()
+{
+	var pgnContainer = document.getElementById("notation_" + getCurrentBoard());
+	return getTextWithSpaces(pgnContainer);
+}
+
 function getFenString()
 {
 	// get the board identifier
@@ -192,4 +218,5 @@ function getNextMove()
 	}
 }
 
+alert(getPgnString());
 getNextMove();
