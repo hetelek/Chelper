@@ -1,6 +1,6 @@
 Chelper
 ======
-A Google Chrome extension which calculates the next best move on [http://chess.com](Chess.com). Installing this plugin will add a browser action into Chrome, which you can then click when playing a game and it will calculate the next move. Clicking the displayed move will automatically execute the move on the board for you. Only use this for learning and training, don't ruin the [http://chess.com](Chess.com) experience.
+A Google Chrome extension which calculates the next best move on [Chess.com](http://chess.com). Installing this plugin will add a browser action into Chrome, which you can then click when playing a game and it will calculate the next move. Clicking the displayed move will automatically execute the move on the board for you. Only use this for learning and training, don't ruin the [Chess.com](http://chess.com) experience.
 
 Installation
 ---------------
