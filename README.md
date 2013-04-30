@@ -5,6 +5,6 @@ A Google Chrome extension which calculates the next best move on [Chess.com](htt
 Installation
 ---------------
 1. Clone this repository to your local machine
-2. Navigate to [extension page](chrome://extensions/)
+2. Navigate to chrome://extensions/
 2. Click "Load unpacked extension..."
 3. Select the location that Chelper has been cloned to
