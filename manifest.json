@@ -28,7 +28,7 @@
 	[
 		"activeTab",
 		"http://*.chess.com/*",
-		"http://nextchessmove.com/"
+		"https://nextchessmove.com/*"
 	]
 	
 }

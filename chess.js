@@ -47,6 +47,7 @@ function collectTextNodes(element, texts)
             collectTextNodes(child, texts);
     }
 }
+
 function getTextWithSpaces(element)
 {
 	var texts = [];
@@ -147,15 +148,40 @@ function getFenString()
 	var i = 0;
 	
 	// loop through, and add the board to the fen string
+	var current1Count = 0;
+	var counting1s = false;
 	var key;
 	for (key in chessBoard)
 	{
 		if (i != 0 && i % 8 == 0)
+		{
+			if (current1Count != 0)
+			{
+				fenStr += current1Count;
+				current1Count = 0;
+			}
+
 			fenStr += "/";
+		}
 		
-		fenStr += chessBoard[key];
+		if (chessBoard[key] == '1')
+			current1Count++;
+		else
+		{
+			if (current1Count != 0)
+			{
+				fenStr += current1Count;
+				current1Count = 0;
+			}
+
+			fenStr += chessBoard[key];
+		}
+
 		i++;
 	}
+
+	if (current1Count != 0)
+		fenStr += current1Count;
 
 	// add the current player's turn (white/black)
 	fenStr += " " + currentPlayer;
@@ -205,11 +231,10 @@ function getNextMove()
 	}
 	else
 	{
-		lastFen = currentFen;
-		
-		// make the request
-		$.post("http://nextchessmove.com/", { fen: lastFen }).done(function(data)
-		{	
+		$.post("https://nextchessmove.com/calculate", { fen: currentFen }).done(function(data)
+		{
+			lastFen = currentFen;
+
 			// once finished, extract the move
 			var startOfMove = data.indexOf("data-move=\\'") + 12;
 			lastMove = data.substring(startOfMove, startOfMove + 4);
@@ -218,5 +243,4 @@ function getNextMove()
 	}
 }
 
-alert(getPgnString());
 getNextMove();
